@@ -16,6 +16,39 @@ class App(Frame):
         lbl1 = Label(self, text="Hello World!").grid(column=0, row=0)
         btn1 = Button(self, text="Quit", command=lambda: self.exitoutof(master)).grid(column=0, row=1)
         btn2 = Button(self, text="Show Error...", command=lambda: self.error(master=master, errormsg="A error occured. (Manual Test)", errorcode=69420)).grid(column=0, row=2)
+    
+    ###
+    # Creates a simple frame up top of any master frame
+    ###
+    def CreateFrame(self, master: Misc, windowname: str = "Window"):
+        # Initialization
+        windowframe = tkinter.Frame(master=master, bg="gray", relief="raised")
+
+        windowframe.pack(fill=X)
+
+        windowframe_name = Label(master=windowframe, text=windowname)
+        windowframe_name.pack(side="left", padx=5, pady=5)
+
+        windowframe_buttonsframe = tkinter.Frame(master=windowframe)
+        windowframe_buttonsframe.pack(side="right", padx=5, pady=5)
+
+        windowframe_buttonsframe_close = tkinter.Button(master=windowframe_buttonsframe, text="X", bg="red", border=2, command=master.destroy)
+        windowframe_buttonsframe_close.pack(side=RIGHT)
+
+        # Actual features
+        def windowframe_move(event):
+            master._x = event.x
+            master._y = event.y
+
+        def windowframe_do_move(event):
+            dx = event.x - master._x
+            dy = event.y - master._y
+            x = master.winfo_x() + dx
+            y = master.winfo_y() + dy
+            master.geometry(f"+{x}+{y}")
+        
+        windowframe.bind("<Button-1>", windowframe_move)
+        windowframe.bind("<B1-Motion>", windowframe_do_move)
 
     def exitoutof(self, master):
         messagebox.Message(icon=messagebox.INFO, type=messagebox.OK, message="Bye...").show()
@@ -25,15 +58,13 @@ class App(Frame):
         master.destroy()
         errorwidget = Tk()
 
-        def lock(_=None):
-            if errorwidget.winfo_geometry() != "350x255":
-                errorwidget.geometry("350x255")
-
+        errorwidget.attributes("-topmost", True)
         errorwidget.overrideredirect(True)
-        #errorwidget.bind("<Configure>", lambda event: errorwidget.after_idle(lock))
         errorwidget.geometry("350x255")
         errorwidget.resizable(False, False)
         errorwidget.pack_propagate(False)
+
+        self.CreateFrame(master=errorwidget, windowname="Error")
 
         errorlbl1 = Label(master=errorwidget, text="An error occured and the program had to close:")
         errorlbl1.pack(anchor=N+W, side=TOP)
