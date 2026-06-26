@@ -37,15 +37,15 @@ class App(Frame):
 
         # Actual features
         def windowframe_move(event):
-            master._x = event.x
-            master._y = event.y
+            master._x = event.x # pyright: ignore[reportAttributeAccessIssue]
+            master._y = event.y # pyright: ignore[reportAttributeAccessIssue]
 
         def windowframe_do_move(event):
-            dx = event.x - master._x
-            dy = event.y - master._y
+            dx = event.x - master._x # pyright: ignore[reportAttributeAccessIssue]
+            dy = event.y - master._y # pyright: ignore[reportAttributeAccessIssue]
             x = master.winfo_x() + dx
             y = master.winfo_y() + dy
-            master.geometry(f"+{x}+{y}")
+            master.geometry(f"+{x}+{y}") # pyright: ignore[reportAttributeAccessIssue]
         
         windowframe.bind("<Button-1>", windowframe_move)
         windowframe.bind("<B1-Motion>", windowframe_do_move)
