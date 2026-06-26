@@ -22,7 +22,7 @@ class App(Frame):
     ###
     def CreateFrame(self, master: Misc, windowname: str = "Window"):
         # Initialization
-        windowframe = tkinter.Frame(master=master, bg="gray", relief="raised")
+        windowframe = tkinter.Frame(master=master, bg="gray", bd=2, relief="raised")
 
         windowframe.pack(fill=X)
 
