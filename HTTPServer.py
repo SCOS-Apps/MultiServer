@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from io import StringIO
-import re
 import socket
 from pathlib import Path
 import threading
