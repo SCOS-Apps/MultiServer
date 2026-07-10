@@ -405,8 +405,26 @@ class WebServer:
 							print(f"[{addr[0]}:{addr[1]}]: HTTP Request: {httpreq.split(" ")}")
 							if httpreq.split(" ")[1] == "/":
 								htmlcont, mime, code, iserror = self.FileHandling().getfile(f"{wwwpath}/{defaultcontent}", addr, forcemime=True, forcemimetype="text/html")
+							elif httpreq.split(" ")[1].startswith("/test"):
+								print(f"[{addr[0]}:{addr[1]}]: Test URL Detected")
+								testkey = int(httpreq.split(" ")[1].split("/")[2])
+								print(f"[{addr[0]}:{addr[1]}]: Testing: {testkey}")
+								if testkey >= 300:
+									print(f"[{addr[0]}:{addr[1]}]: Testing code above 300, assuming error.")
+									iserror = True
+								htmlcont, mime, code = b"", "", testkey
 							else:
 								htmlcont, mime, code, iserror = self.FileHandling().getfile(f"{wwwpath}/{httpreq.split(" ")[1]}", addr)
+							if mime and mime.startswith("text/") and htmlcont and htmlcont.decode().startswith("<redirect"):
+								print(f"[{addr[0]}:{addr[1]}]: Redirect detected for requested file...")
+								iserror = True
+								if HTMLCode(htmlcont.decode())["node:redirect"].node["type"] == "temp":
+									code = TEMPORARY_REDIRECT
+								elif HTMLCode(htmlcont.decode())["node:redirect"].node["type"] == "perm":
+									code = PERMANENT_REDIRECT
+								else:
+									code = TEMPORARY_REDIRECT
+								location = HTMLCode(htmlcont.decode())["node:redirect"].content
 							print(f"[{addr[0]}:{addr[1]}]: Sending data...")
 							if iserror != True:
 								if mime and mime.startswith("text/"):
@@ -417,12 +435,43 @@ class WebServer:
 									f"HTTP/1.1 {code} {HTTP().getstringfromcode(code)}\r\n"
 									f"content-type: {mime}\r\n"
 									f"content-length: {str(len(htmlcont))}\r\n"
+									f"connection: close\r\n"
 									f"date: {datetime.today().strftime("%a, %d %b %Y %H:%M:%S %Z")}\r\n"
 									f"\r\n"
 								).encode()
 								conn.send(header)
 							else:
-								conn.send(f"HTTP/1.1 {code} {HTTP().getstringfromcode(code)}".encode())
+								if code >= 300:
+									if testkey:
+										location = "/"
+								htmlcode = HTMLCode()
+								htmlcode.Node(htmlcode.soup).add("title", inside=htmlcode["node:head"], content=f"{code}: {HTTP().getstringfromcode(code)}")
+								htmlcode.Node(htmlcode.soup).add("h1", options={"style": "display: flex; justify-content: center; align-items: center;"}, content=f"{code}: {HTTP().getstringfromcode(code)}")
+								htmlcode.Node(htmlcode.soup).add("p", content="You tried viewing the following:")
+								htmlcode.Node(htmlcode.soup).add("p", options={"style": "display: flex; justify-content: center; align-items: center;"}, content=httpreq.split(" ")[1])
+								htmlcont = htmlcode.soup.encode()
+								mime = "text/html"
+								if code == PERMANENT_REDIRECT or code == TEMPORARY_REDIRECT:
+									print(f"[{addr[0]}:{addr[1]}]: Redirect detected.")
+									header = (
+										f"HTTP/1.1 {code} {HTTP().getstringfromcode(code)}\r\n"
+										f"content-type: {mime}\r\n"
+										f"content-length: {str(len(htmlcont))}\r\n"
+										f"connection: close\r\n"
+										f"date: {datetime.today().strftime("%a, %d %b %Y %H:%M:%S %Z")}\r\n"
+										f"location: {location}\r\n"
+										f"\r\n"
+									).encode()
+								else:
+									header = (
+										f"HTTP/1.1 {code} {HTTP().getstringfromcode(code)}\r\n"
+										f"content-type: {mime}\r\n"
+										f"content-length: {str(len(htmlcont))}\r\n"
+										f"connection: close\r\n"
+										f"date: {datetime.today().strftime("%a, %d %b %Y %H:%M:%S %Z")}\r\n"
+										f"\r\n"
+									).encode()
+								conn.send(header)
 								iserror = False
 								code = 200
 							print(f"[{addr[0]}:{addr[1]}]: Done.")
