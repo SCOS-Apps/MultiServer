@@ -4,7 +4,14 @@ from typing import Literal
 from bs4 import BeautifulSoup, Tag
 from typing_extensions import disjoint_base
 
-serverstartup: list
+# Reserved for future use. (TODO)
+ServerStartup: list
+ConnHandling: list
+GetFileHandling: list
+FileModHandling:list
+HeaderHandling: list
+ErrorHandling: list
+ErrorPageHandling: list
 
 @disjoint_base
 class WebServer:

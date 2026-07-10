@@ -4,9 +4,9 @@ import platform
 import socket
 import threading
 
-from HTTPServer_stubs import * # pyright: ignore[reportAssignmentType]
+from HTTPServer_stubs import * # pyright: ignore[reportMissingModuleSource, reportAssignmentType]
 
-serverstartup = [WebServer().start]
+ServerStartup = [WebServer().start]
 
 from modules.FileHandling import *
 from modules.HTMLCode import *
