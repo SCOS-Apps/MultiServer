@@ -1,4 +1,5 @@
 cspell.json
+test.py
 .vscode/
 .vscode/*
 __pycache__/
