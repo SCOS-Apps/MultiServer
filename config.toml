@@ -1,0 +1,41 @@
+[Server]
+Host = "127.0.0.1"
+Port = [8888]
+MaxConnections = 50
+WorkPath = "./www"
+DefaultIndex = "index.html"
+Debug = false
+
+[Module]
+ModuleDirPy = "modules"
+Load = [
+        "FileHandling",
+        "HTMLCode",
+        "HTTP",
+        "PythonHandling",
+        "Socket",
+        "WebServer",
+]
+
+[Module.FileHandling]
+[Module.FileHandling.MIME]
+EnableMIME = true
+MIMEModuleType = "auto"                      # mime, mimetype, auto
+MIMEDefaultType = "application/octet-stream"
+
+[Module.HTMLCode]
+MTOFallback = "Error" # Error, SelectFirst
+[Module.HTMLCode.BS4]
+BS4ParserType = "html.parser"                                  # html.parser, html5lib, lxml, lxml-xml
+BS4DefaultPage = """<html><head></head><body></body></html>"""
+
+[Module.PythonHandling]
+Enable = true
+RunCoProcess = false
+EnableFormBuilding = true
+
+[Module.Socket]
+UseServerOptions = true
+[Module.Socket.Overrides]
+Host = "localhost"
+Port = [80]

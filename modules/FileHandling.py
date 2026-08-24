@@ -1,17 +1,33 @@
 import mimetypes
-from pathlib import Path
 import socket
+from typing import Any, Literal
 import magic
+from pathlib import Path
+
+from MultiServer_stubs import FileLike, GetFileHandling
 from modules.HTTP import *
 
-class FileHandling:
+class FileHandling(FileLike):
+	"""File Handling Class
+	"""
 	filecont = bytes
 	mimetype = str | None
 	returncode = int
 	iserror = bool
 	def __init__(self) -> None:
 		pass
-	def getfile(self, filename: str, addr: socket._RetAddress, forcemime: bool = False, forcemimetype: str = "") -> tuple[filecont, mimetype, returncode, iserror]:
+	def getfile(self, filename: str, addr: Any, forcemime: bool = False, forcemimetype: str = "") -> tuple[filecont, mimetype, returncode, iserror]:
+		"""Gets a specific file.
+
+		Args:
+		    filename (str): Name of the file to be opened.
+		    addr (socket._RetAddress): Socket Return Address.
+		    forcemime (bool, optional): Force a specific MIME Type. Defaults to False.
+		    forcemimetype (str, optional): Forced MIME Type. Defaults to "".
+
+		Returns:
+		    tuple[filecont, mimetype, returncode, iserror]: Tuple containing the file content, MIME Type, the HTTP return code and iserror bool.
+		"""
 		filemime: str = ""
 		mime: None | str = "application/octet-stream"
 		try: filecont = open(Path(f"{filename}"), "rb").read()
@@ -35,3 +51,10 @@ class FileHandling:
 			else:
 				mime = forcemimetype
 		return (filecont, mime, OK, False)
+	def writefile(self, filename: str, addr: Any, wrtype: Literal["append", "fromstart", "specific"] | None = "append", wrfrom: int | None = 0) -> bool:
+		return True
+
+def doAppend(hostname: str, port: int, workpath: str, defaultindex: str, debug: bool):
+	pass
+
+GetFileHandling.append(FileHandling) # pyright: ignore[reportArgumentType]

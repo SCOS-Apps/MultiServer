@@ -1,3 +1,10 @@
+from datetime import datetime, timezone
+from typing import Literal
+
+from MultiServer_stubs import DictWithHeader
+
+HTTP_VERSIONS = Literal["1.1", "2.0", "3.0"]
+
 # HTTP Methods
 CONNECT="CONNECT"
 DELETE="DELETE"
@@ -146,3 +153,28 @@ class HTTP:
 			if reason.lower() == string.lower():
 				return code
 		return None
+	
+	class HeaderResponse(DictWithHeader):
+		def __init__(self, version: HTTP_VERSIONS, code: int, content: bytes | None = None, mime: str | None = "application/octet-stream") -> None:
+			super().__init__()
+			self[None] = f"HTTP/{version} {code} {HTTP().getstringfromcode(code)}"
+			self["Date"] = datetime.now(timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
+			if content:
+				self.mime = mime
+				self.content = content
+				self.contentlength = len(content)
+			else:
+				self.mime = None
+				self.content = None
+				self.contentlength = 0
+			if self.mime: self["Content-Type"] = self.mime
+			if self.contentlength: self["Content-Length"] = self.contentlength
+		def preset(self: DictWithHeader, preset: Literal["ErrorPage", "Redirect"], *values: object):
+			return preset, values
+		def returnHTTP(self) -> bytes:
+			header = self["NoneHTTP"].decode()
+			if self.content is not None: header = header + self.content
+			return header
+
+def doAppend(hostname: str, port: int, workpath: str, defaultindex: str, debug: bool):
+	pass

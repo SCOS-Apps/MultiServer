@@ -1,6 +1,7 @@
 cspell.json
 test.py
-.vscode/
-.vscode/*
+.*/*
+www/
+www/*
 __pycache__/
 __pycache__/*
