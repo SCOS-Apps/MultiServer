@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>POST Echo</title>
+</head>
+<body>
+<h1>POST Echo</h1>
+<form action="/echo.html" method="POST">
+  <label>Name: <input type="text" name="username" /></label><br />
+  <label>Message: <input type="text" name="message" /></label><br />
+  <button type="submit">Send</button>
+</form>
+<python>
+post = request.get('post', {})
+if post:
+    print(f"<h2>You submitted:</h2>")
+    print(f"<p><strong>Name:</strong> {post.get('username', '')}</p>")
+    print(f"<p><strong>Message:</strong> {post.get('message', '')}</p>")
+else:
+    print("<p>Submit the form above to see your data here.</p>")
+</python>
+</body>
+</html>

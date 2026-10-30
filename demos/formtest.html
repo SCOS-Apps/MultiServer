@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Form Test</title>
+</head>
+<body>
+    <h1>Form Test</h1>
+    <form action="/formtest.html" method="POST">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" required>
+        <button type="submit">Submit</button>
+    </form>
+    <python>
+name = form.get("name", "Guest")
+print(f"<p>Hello, {name}!</p>")
+    </python>
+</body>
+</html>

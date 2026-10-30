@@ -1,0 +1,12 @@
+import datetime
+import json
+
+# AJAX endpoint example: returns current time as JSON
+now = datetime.datetime.now().isoformat()
+data = {
+    "time": now,
+    "message": "Hello from PythonHTML!",
+    "form": form,
+    "query": request.get("get", {}),
+}
+print(json.dumps(data))
