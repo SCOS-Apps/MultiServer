@@ -1,6 +1,7 @@
 cspell.json
 test.py
 .*/*
+.*
 www/
 www/*
 __pycache__/

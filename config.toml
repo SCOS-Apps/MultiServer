@@ -5,6 +5,10 @@ MaxConnections = 50
 WorkPath = "./www"
 DefaultIndex = "index.html"
 Debug = false
+DirectoryListing = true
+DirectoryListingIndexBottom = true
+KeepAlive = true
+KeepAliveTimeout = 5
 
 [Module]
 ModuleDirPy = "modules"
@@ -39,3 +43,12 @@ UseServerOptions = true
 [Module.Socket.Overrides]
 Host = "localhost"
 Port = [80]
+
+[Security]
+RestrictToWorkPath = true
+
+[Auth]
+Enabled = true
+Realm = "MultiServer"
+UsersFile = "./.htpasswd"
+RequireMethods = ["PUT", "DELETE"]

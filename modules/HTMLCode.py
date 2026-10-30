@@ -175,5 +175,5 @@ class HTMLCode:
 			"""
 			self.node.decompose()
 
-def doAppend(hostname: str, port: int, workpath: str, defaultindex: str, debug: bool):
+def doAppend(hostname: str, port: int, workpath: str, defaultindex: str, debug: bool, **kwargs) -> None:
 	pass

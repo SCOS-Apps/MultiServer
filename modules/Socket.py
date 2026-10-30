@@ -18,6 +18,7 @@ class Socket(ConnectionLike):
 		"""		
 		print(f"[{HOST}:{PORT}]: Opening socket...")
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		s.bind((HOST, PORT))
 		s.listen(5)
 		print(f"[{HOST}:{PORT}]: Socket opened.")
@@ -27,5 +28,5 @@ class Socket(ConnectionLike):
 	def send(self, sock: socket.socket, data: bytes) -> int:
 		return socket.socket.send(sock, data)
 
-def doAppend(hostname: str, port: int, workpath: str, defaultindex: str, debug: bool):
+def doAppend(hostname: str, port: int, workpath: str, defaultindex: str, debug: bool, **kwargs) -> None:
 	ConnHandling.append(TransportHandler(Socket().startsocket, hostname, port, ServerHandling, (hostname, port, workpath, defaultindex, debug)))

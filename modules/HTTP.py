@@ -172,9 +172,9 @@ class HTTP:
 		def preset(self: DictWithHeader, preset: Literal["ErrorPage", "Redirect"], *values: object):
 			return preset, values
 		def returnHTTP(self) -> bytes:
-			header = self["NoneHTTP"].decode()
+			header = self["NoneHTTP"].encode()
 			if self.content is not None: header = header + self.content
 			return header
 
-def doAppend(hostname: str, port: int, workpath: str, defaultindex: str, debug: bool):
+def doAppend(hostname: str, port: int, workpath: str, defaultindex: str, debug: bool, **kwargs) -> None:
 	pass

@@ -1,22 +1,52 @@
+#!/bin/python3
+
 from pathlib import Path
 import tomllib
+from importlib import import_module
 
 MultiServerVersion = "1.0"
 
 if __name__ == "__main__":
 	config = tomllib.load(open(Path("./config.toml"), "rb"))
-	hostname = config.get("Server").get("Host") # pyright: ignore[reportOptionalMemberAccess]
-	port = config.get("Server").get("Port")[0] # pyright: ignore[reportOptionalMemberAccess]
-	workpath = config.get("Server").get("WorkPath") # pyright: ignore[reportOptionalMemberAccess]
-	defaultindex = config.get("Server").get("DefaultIndex") # pyright: ignore[reportOptionalMemberAccess]
-	debug = config.get("Server").get("Debug") # pyright: ignore[reportOptionalMemberAccess]
+	server_cfg = config.get("Server", {})
+	hostname = server_cfg.get("Host") # pyright: ignore[reportOptionalMemberAccess]
+	port_cfg = server_cfg.get("Port") # pyright: ignore[reportOptionalMemberAccess]
+	port = port_cfg[0] if isinstance(port_cfg, list) else int(port_cfg)
+	workpath = server_cfg.get("WorkPath") # pyright: ignore[reportOptionalMemberAccess]
+	defaultindex = server_cfg.get("DefaultIndex") # pyright: ignore[reportOptionalMemberAccess]
+	debug = server_cfg.get("Debug") # pyright: ignore[reportOptionalMemberAccess]
 	moduledir = config.get("Module").get("ModuleDirPy") # pyright: ignore[reportOptionalMemberAccess]
+	mime_cfg = config.get("Module", {}).get("FileHandling", {}).get("MIME", {})
+	mime_enable = mime_cfg.get("EnableMIME", True)
+	mime_module_type = mime_cfg.get("MIMEModuleType", "auto")
+	mime_default_type = mime_cfg.get("MIMEDefaultType", "application/octet-stream")
+	restrict_to_workpath = config.get("Security", {}).get("RestrictToWorkPath", True)
+	directory_listing = server_cfg.get("DirectoryListing", True)
+	directory_listing_index_bottom = server_cfg.get("DirectoryListingIndexBottom", True)
+	keep_alive = server_cfg.get("KeepAlive", True)
+	keep_alive_timeout = server_cfg.get("KeepAliveTimeout", 5)
+	auth_cfg = config.get("Auth", {})
+	auth_enabled = auth_cfg.get("Enabled", False)
+	auth_realm = auth_cfg.get("Realm", "MultiServer")
+	auth_users_file = auth_cfg.get("UsersFile", "./.htpasswd")
+	auth_require_methods = auth_cfg.get("RequireMethods", ["PUT", "DELETE"])
 	from MultiServer_stubs import *
 	for i in config.get("Module").get("Load"): # pyright: ignore[reportOptionalMemberAccess]
 		print(f"[MultiServer:{MultiServerVersion}] Loading {i}...")
-		exec(f"""from {moduledir}.{i} import *
-doAppend('{hostname}', {port}, '{workpath}', '{defaultindex}', {debug})
-del(doAppend)""")
+		module = import_module(f"{moduledir}.{i}")
+		if hasattr(module, "doAppend"):
+			module.doAppend(hostname, port, workpath, defaultindex, debug,
+			    mime_enable=mime_enable, mime_module_type=mime_module_type,
+			    mime_default_type=mime_default_type,
+			    restrict_to_workpath=restrict_to_workpath,
+			    directory_listing=directory_listing,
+			    directory_listing_index_bottom=directory_listing_index_bottom,
+			    keep_alive=keep_alive,
+			    keep_alive_timeout=keep_alive_timeout,
+			    auth_enabled=auth_enabled,
+			    auth_realm=auth_realm,
+			    auth_users_file=auth_users_file,
+			    auth_require_methods=auth_require_methods)
 		print(f"[MultiServer:{MultiServerVersion}] Loaded {i}.")
 	handlers = []
 	for handler in ConnHandling:
